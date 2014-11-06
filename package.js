@@ -12,10 +12,10 @@ Package.on_use(function(api) {
   api.use('coffeescript@1.0.1', 'client');
 
   // Core dependencies
-  api.use('underscore', 'client');
+  api.use('underscore@1.0.1', 'client');
   api.use('reactive-var', 'client');
-  api.use('blaze', 'client');
-  api.use('templating', 'client');
+  api.use('blaze@2.0.0', 'client');
+  api.use('templating@1.0.5', 'client');
   api.use('tracker', 'client');
   api.use('random', 'client');
 
