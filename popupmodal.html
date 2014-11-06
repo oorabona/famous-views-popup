@@ -1,0 +1,22 @@
+<template name="_modal_popup">
+  {{> View this}}
+</template>
+
+<template name="modal_popup">
+  {{#with modalBackdrop}}
+    {{> Surface this}}
+  {{/with}}
+  {{#Scrollview size=getSizeFromViewport origin="[.5,.5]" align="[.5,.5]"}}
+    {{#famousEach popup}}
+      {{#famousIf show}}
+        {{> _modal_popup this}}
+      {{/famousIf}}
+    {{/famousEach}}
+  {{/Scrollview}}
+</template>
+
+<template name="modal_backdrop">
+  <div class="modal_backdrop">
+    <!-- Modal backdrop -->
+  </div>
+</template>
