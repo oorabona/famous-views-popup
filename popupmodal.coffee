@@ -8,7 +8,7 @@ _setup = new ReactiveVar
 
 _popups.set []
 
-@Popups =
+class @Popups =
   # You can override the default popup animation here. It is an exact replica
   # of famous.views.Lightbox options parameter
   _defaultLightbox:
@@ -22,7 +22,7 @@ _popups.set []
       curve: Easing.inOutQuad
 
   # This can be called anytime and will firstly be called during popup init
-  setup: (opts = {}) ->
+  constructor: (opts = {}) ->
     opts.translate = [0,0,999]
     opts.size = [undefined,undefined]
     opts.template ?= "modal_backdrop"

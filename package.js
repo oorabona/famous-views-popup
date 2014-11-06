@@ -1,7 +1,7 @@
 Package.describe({
   name: 'oorabona:famous-views-popup',
   summary: 'Use Famo.us for your popups!',
-  version: '1.0.0',
+  version: '0.1.1',
   git: 'https://github.com/oorabona/famous-views-popup.git'
 });
 
@@ -9,7 +9,7 @@ Package.on_use(function(api) {
   // Meteor version
   api.versionsFrom('METEOR@1.0');
   // FIXME: Should I remove coffeescript dependency here?
-  api.use('coffeescript@1.0.4', 'client');
+  api.use('coffeescript@1.0.1', 'client');
 
   // Core dependencies
   api.use('underscore', 'client');
@@ -25,6 +25,4 @@ Package.on_use(function(api) {
   // Files to be added to project
   api.add_files('popupmodal.html', 'client');
   api.add_files('popupmodal.coffee', 'client');
-
-  api.export('Popups', 'client');
 });
