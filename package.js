@@ -7,7 +7,7 @@ Package.describe({
 
 Package.on_use(function(api) {
   // Meteor version
-  api.versionsFrom('METEOR@0.9.1');
+  api.versionsFrom('METEOR@1.0');
   // FIXME: Should I remove coffeescript dependency here?
   api.use('coffeescript@1.0.4', 'client');
 
@@ -15,15 +15,16 @@ Package.on_use(function(api) {
   api.use('underscore', 'client');
   api.use('reactive-var', 'client');
   api.use('blaze', 'client');
-  api.imply('templating', 'client');
+  api.use('templating', 'client');
+  api.use('tracker', 'client');
+  api.use('random', 'client');
 
-  api.use('mjn:famous@0.3.0_5', 'client', { weak: true });
-  api.use('raix:famono@0.9.14', { weak: true });
-  api.use('gadicohen:famous-views@0.1.18', 'client');
+  api.use('gadicohen:famous-views', 'client');
+  api.imply('gadicohen:famous-views@0.1.18')
 
   // Files to be added to project
-  api.add_files('popupmodal.coffee', 'client');
   api.add_files('popupmodal.html', 'client');
+  api.add_files('popupmodal.coffee', 'client');
 
   api.export('Popups', 'client');
 });
