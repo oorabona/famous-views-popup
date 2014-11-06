@@ -8,7 +8,7 @@ _setup = new ReactiveVar
 
 _popups.set []
 
-class @Popups =
+class @Popups
   # You can override the default popup animation here. It is an exact replica
   # of famous.views.Lightbox options parameter
   _defaultLightbox:

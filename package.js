@@ -1,7 +1,7 @@
 Package.describe({
   name: 'oorabona:famous-views-popup',
   summary: 'Use Famo.us for your popups!',
-  version: '0.1.1',
+  version: '0.1.2',
   git: 'https://github.com/oorabona/famous-views-popup.git'
 });
 
@@ -18,6 +18,9 @@ Package.on_use(function(api) {
   api.use('templating', 'client');
   api.use('tracker', 'client');
   api.use('random', 'client');
+
+  api.use('mjn:famous@0.3.0_5', 'client', { weak: true });
+  api.use('raix:famono@0.9.14', { weak: true });
 
   api.use('gadicohen:famous-views', 'client');
   api.imply('gadicohen:famous-views@0.1.18')
