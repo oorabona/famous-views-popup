@@ -16,7 +16,6 @@ Popups.show opts
 
 Use this function to show a modal popup. The only mandatory option here is "template" which is the template you want
 to render in famous-views-popup
-==================
 
 Meteor Famo.us Views Popup widget.
 Exposes a __Popups__ object which allows you to use the following functions:
