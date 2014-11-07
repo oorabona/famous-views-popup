@@ -8,6 +8,14 @@ Exposes a __Popups__ object which allows you to use the following functions:
 Popups.setup opts
 ```
 
+With `opts` as an object allowing:
+* `translate`: Where the popup ends up. Default `[0, 0, 999]`.
+* `size`: Size of the modal. Default: `[undefined, undefined]`.
+* `template`: Blaze's template of the modal. Default: `"modal_backdrop"`.
+* `opacity`: Opacity of the backdrop. Default 0.5.
+* `backdropCloseOnClick`: Make the popup disapear when backdrop is clicked. Default: `true`.
+* `lightbox`: You can set your own [`famous.views.Lighbox`](http://famo.us/docs/views/Lightbox).
+
 To set up how popups will behave, i.e. transformations, animations, modal backdrop, etc.
 
 ```coffeescript
