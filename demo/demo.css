@@ -1,1 +1,6 @@
 /* CSS declarations go here */
+.popup {
+  background: black;
+  color: white;
+  opacity: 0.5;
+}
