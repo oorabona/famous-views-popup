@@ -3,8 +3,10 @@
 </template>
 
 <template name="modal_popup">
-  {{#with modalBackdrop}}
-    {{> Surface this}}
+  {{#with backdrop}}
+    {{#if modal}}
+      {{> Surface this}}
+    {{/if}}
   {{/with}}
   {{#Scrollview size=getSizeFromViewport origin="[.5,.5]" align="[.5,.5]"}}
     {{#famousEach popup}}

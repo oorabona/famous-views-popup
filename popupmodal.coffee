@@ -1,25 +1,32 @@
-{ Transform } = famous.core
-{ Easing } = famous.transitions
-{ Lightbox } = famous.views
-{ Timer } = famous.utilities
-
 _popups = new ReactiveVar
 _setup = new ReactiveVar
 
 _popups.set []
 
+getRandomInt = (min, max) ->
+  Math.floor(Math.random() * (max - min)) + min
+
+getViewport = ->
+  e = window
+  a = "inner"
+  unless "innerWidth" of window
+    a = "client"
+    e = document.documentElement or document.body
+  width: e[a + "Width"]
+  height: e[a + "Height"]
+
 class @Popups
   # You can override the default popup animation here. It is an exact replica
   # of famous.views.Lightbox options parameter
   _defaultLightbox:
-    inTransform: Transform.translate 0,500,0
-    outTransform: Transform.translate 0,500,0
+    inTransform: famous.core.Transform.translate 0,500,0
+    outTransform: famous.core.Transform.translate 0,500,0
     inTransition:
       duration: 1000
-      curve: Easing.outElastic
+      curve: famous.transitions.Easing.outElastic
     outTransition:
       duration: 2000
-      curve: Easing.inOutQuad
+      curve: famous.transitions.Easing.inOutQuad
 
   # This can be called anytime and will firstly be called during popup init
   constructor: (opts = {}) ->
@@ -76,8 +83,7 @@ class @Popups
     # a FamousView ID.
     opts.id ?= getRandomInt 1000, 2000
 
-    # If we have translate option and a Z index, add enough so that it will
-    # be quite so "in front" of everything else.
+    # If we have translate option and a Z index, add enough to be "in front"
     translate = opts.translate ? [0,0,0]
     translate[2] += 1000
     opts.translate = translate
@@ -88,10 +94,8 @@ class @Popups
     opts.id
 
 Template.modal_popup.helpers
-  modalBackdrop: ->
+  backdrop: ->
     if _popups.get().length > 0
-      unless _setup.get()
-        Popups.setup()
       return _setup.get()
     return false
   popup: ->
@@ -115,7 +119,7 @@ Template._modal_popup.rendered = ->
     _.defaults lightbox, setup.lightbox
 
     # http://stackoverflow.com/questions/24806437/built-in-popup-modal
-    child.surface.lightbox = new Lightbox lightbox
+    child.surface.lightbox = new famous.views.Lightbox lightbox
     fview.node.add child.surface.lightbox
     child.surface.lightbox.show child.surface
 
@@ -127,8 +131,20 @@ Template.modal_backdrop.events
     setup = _setup.get()
     if setup.backdropCloseOnClick
       # No specific popup => remove 'em all
-      Popups.hide()
-    return
+      popups = _popups.get()
+      {duration} = setup.lightbox.outTransition
+      for popup in popups
+        do (popup) ->
+          fview = FView.byId popup.id
+          return unless fview
+          child = fview.children[0]
+          duration = popup.lightbox?.outTransition.duration ? duration
+          child?.surface.lightbox.hide()
+          return
 
-Tracker.autorun ->
-  return
+      # Wait for out animation to complete if nowait is false
+      famous.utilities.Timer.setTimeout (->
+        _popups.set []
+      ), duration
+
+    return
