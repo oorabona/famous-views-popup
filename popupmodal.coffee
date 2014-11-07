@@ -16,18 +16,6 @@ getViewport = ->
   height: e[a + "Height"]
 
 class @Popups
-  # You can override the default popup animation here. It is an exact replica
-  # of famous.views.Lightbox options parameter
-  _defaultLightbox:
-    inTransform: famous.core.Transform.translate 0,500,0
-    outTransform: famous.core.Transform.translate 0,500,0
-    inTransition:
-      duration: 1000
-      curve: famous.transitions.Easing.outElastic
-    outTransition:
-      duration: 2000
-      curve: famous.transitions.Easing.inOutQuad
-
   # This can be called anytime and will firstly be called during popup init
   constructor: (opts = {}) ->
     opts.translate = [0,0,999]
@@ -92,6 +80,19 @@ class @Popups
     p.push opts
     _popups.set p
     opts.id
+
+# You can override the default popup animation here. It is an exact replica
+# of famous.views.Lightbox options parameter
+FView.ready ->
+  @Popups::_defaultLightbox =
+    inTransform: famous.core.Transform.translate 0,500,0
+    outTransform: famous.core.Transform.translate 0,500,0
+    inTransition:
+      duration: 1000
+      curve: famous.transitions.Easing.outElastic
+    outTransition:
+      duration: 2000
+      curve: famous.transitions.Easing.inOutQuad
 
 Template.modal_popup.helpers
   backdrop: ->
