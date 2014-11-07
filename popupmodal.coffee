@@ -8,12 +8,12 @@ getRandomInt = (min, max) ->
 
 getViewport = ->
   e = window
-  a = "inner"
-  unless "innerWidth" of window
-    a = "client"
+  a = 'inner'
+  unless 'innerWidt' of window
+    a = 'client'
     e = document.documentElement or document.body
-  width: e[a + "Width"]
-  height: e[a + "Height"]
+  width: e["#{a}Width"]
+  height: e["#{a}Height"]
 
 class @Popups
   # You can override the default popup animation here. It is an exact replica
@@ -37,7 +37,6 @@ class @Popups
     opts.backdropCloseOnClick ?= true
     opts.lightbox ?= @_defaultLightbox
     _setup.set opts
-    return
 
   # Hide a modal (i.e. remove it from the list)
   hide: (query, cb) ->
@@ -58,16 +57,14 @@ class @Popups
         child = fview.children[0]
         duration = popup.lightbox?.outTransition.duration ? duration
         child?.surface.lightbox.hide()
-        return
       else
         popup
 
     # Wait for out animation to complete and call back if needed
-    Timer.setTimeout (->
+    Timer.setTimeout ->
       _popups.set shown
       cb && cb()
-    ), duration
-    return
+    , duration
 
   show: (opts = {}) ->
     opts.show = true
@@ -75,7 +72,7 @@ class @Popups
 
   _add: (opts) ->
     unless opts.template
-      console.error "You need to specify a template to render!", opts
+      console.error 'You need to specify a template to render!', opts
       return
 
     # FIXME: It apparently confuses with #View ID and modifies its reference
@@ -95,9 +92,7 @@ class @Popups
 
 Template.modal_popup.helpers
   backdrop: ->
-    if _popups.get().length > 0
-      return _setup.get()
-    return false
+    if _popups.get().length > 0 then _setup.get() else false
   popup: ->
     _popups.get()
 
@@ -123,10 +118,8 @@ Template._modal_popup.rendered = ->
     fview.node.add child.surface.lightbox
     child.surface.lightbox.show child.surface
 
-    return
-
 Template.modal_backdrop.events
-  "click": (evt,tmpl) ->
+  'click': (evt,tmpl) ->
     # from last inserted to first we hide and then remove modals
     setup = _setup.get()
     if setup.backdropCloseOnClick
@@ -140,11 +133,8 @@ Template.modal_backdrop.events
           child = fview.children[0]
           duration = popup.lightbox?.outTransition.duration ? duration
           child?.surface.lightbox.hide()
-          return
 
       # Wait for out animation to complete if nowait is false
-      famous.utilities.Timer.setTimeout (->
+      famous.utilities.Timer.setTimeout ->
         _popups.set []
-      ), duration
-
-    return
+      , duration
