@@ -62,7 +62,7 @@ class @Popups
       else
         popup
 
-    # Wait for out animation to complete if nowait is false
+    # Wait for out animation to complete and call back if needed
     Timer.setTimeout (->
       _popups.set shown
       cb && cb()
