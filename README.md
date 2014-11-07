@@ -4,6 +4,8 @@ famous-views-popup
 A [Meteor Famo.us Views](https://github.com/gadicc/meteor-famous-views) Popup widget. Tested with Meteor 1.0 but should work with
 previous versions.
 
+You can see a demo [here](http://famous-views-popup.meteor.com)
+
 # API
 Exposes a __Popups__ object which you can instantiate with:
 
