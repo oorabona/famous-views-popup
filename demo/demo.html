@@ -1,0 +1,29 @@
+<head>
+  <title>demo</title>
+</head>
+
+<body>
+  <h1>Welcome to Meteor!</h1>
+
+  {{> hello}}
+</body>
+
+<template name="hello">
+  <p>
+    Hello
+  </p>
+  <button id="modal">With modal</button>
+  <button id="nomodal">Without modal</button>
+</template>
+
+<template name="world">
+  {{> Surface template="_world"}}
+</template>
+
+<template name="_world">
+  <h1>World !</h1>
+</template>
+
+<template name="famousInit">
+  {{> modal_popup}}
+</template>
