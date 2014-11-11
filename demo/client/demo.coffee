@@ -3,7 +3,18 @@ popup = null
 Template.hello.events
   'click button': (evt, tmpl) ->
     # Show popup
-    popup = new Popups modal: evt.currentTarget.id is "modal"
+    modal = true
+    if evt.currentTarget.id is "nomodal" then modal = false
+
+    popup = new Popups modal: modal
     popup.show
-      template: "world"
+      template: evt.currentTarget.id
+
     return
+
+Template._bootstrap.rendered = ->
+  # Modal manual opening
+  @$('.modal').addClass('in').css
+    display: 'block'
+    overflow: 'hidden'
+  return
