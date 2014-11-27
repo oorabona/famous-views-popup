@@ -1,29 +1,25 @@
-_popups = new ReactiveVar
+_popups = new ReactiveVar []
 _setup = new ReactiveVar
-
-_popups.set []
 
 getRandomInt = (min, max) ->
   Math.floor(Math.random() * (max - min)) + min
 
-getViewport = ->
-  e = window
-  a = 'inner'
-  unless 'innerWidt' of window
-    a = 'client'
-    e = document.documentElement or document.body
-  width: e["#{a}Width"]
-  height: e["#{a}Height"]
+@Popups =
+  # Default size with the same name as Bootstrap. But not the same meaning!
+  sizes:
+    'modal-sm': "[300, true]"
+    'modal': "[600, true]"
+    'modal-lg': "[900, true]"
 
-class @Popups
-  # This can be called anytime and will firstly be called during popup init
-  constructor: (opts = {}) ->
-    opts.translate = [0,0,999]
-    opts.size = [undefined,undefined]
-    opts.template ?= "modal_backdrop"
+  # We define how our backdrop will behave
+  setOptions: (opts = {}) ->
     opts.opacity ?= 0.5
+    # If true (default), handles automagically clicks to backdrop and bind to
+    # a "close all" event.
     opts.backdropCloseOnClick ?= true
-    opts.lightbox ?= @_defaultLightbox
+    opts.lightbox ?= {}
+    _.defaults opts.lightbox, @_defaultLightbox
+
     _setup.set opts
 
   # Hide a modal (i.e. remove it from the list)
@@ -49,19 +45,26 @@ class @Popups
         popup
 
     # Wait for out animation to complete and call back if needed
-    Timer.setTimeout ->
+    famous.utilities.Timer.setTimeout ->
       _popups.set shown
       cb && cb()
     , duration
 
-  show: (opts = {}) ->
-    opts.show = true
-    @_add opts
+  show: (opts = {}, cb) ->
+    if typeof opts == "function"
+      [cb, opts] = [opts, {}]
+    id = @_add opts
+    cb && cb id
+    id
 
   _add: (opts) ->
     unless opts.template
       console.error 'You need to specify a template to render!', opts
       return
+
+    # If setup not defined, set default options
+    unless _setup.get()
+      @setOptions()
 
     # FIXME: It apparently confuses with #View ID and modifies its reference
     # Temp fix is to generate a random integer and expect it to not be already
@@ -69,26 +72,41 @@ class @Popups
     opts.id ?= getRandomInt 1000, 2000
 
     # If we have translate option and a Z index, add enough to be "in front"
+    p = _popups.get()
     translate = opts.translate ? [0,0,0]
-    translate[2] += 1000
+    translate[2] += 1000 + p.length
     opts.translate = translate
 
-    p = _popups.get()
+    # Center by default
+    opts.origin ?= [.5,.5]
+    opts.align ?= [.5,.5]
+
+    # Check if we were given a valid size
+    if opts.size
+      sizeStr = eval "'#{opts.size}'"
+      if typeof @sizes[sizeStr] == "undefined"
+        size = eval opts.size
+        # If array we keep it as is. Otherwise it may be a size 'shortcut'
+        unless size instanceof Array
+          throw "Size not defined in Popups.sizes: #{opts.size}"
+      else
+        opts.size = @sizes[opts.size]
+
     p.push opts
     _popups.set p
     opts.id
 
-# You can override the default popup animation here. It is an exact replica
-# of famous.views.Lightbox options parameter
+# You can override the default popup animation here. This is what will be given
+# to famo.us lightbox when template is rendered.
 FView.ready ->
-  @Popups::_defaultLightbox =
-    inTransform: famous.core.Transform.translate 0,500,0
+  Popups._defaultLightbox =
+    inTransform: famous.core.Transform.translate 0,-500,0
     outTransform: famous.core.Transform.translate 0,500,0
     inTransition:
-      duration: 1000
+      duration: 500
       curve: famous.transitions.Easing.outElastic
     outTransition:
-      duration: 2000
+      duration: 1000
       curve: famous.transitions.Easing.inOutQuad
 
 Template.modal_popup.helpers
@@ -96,10 +114,6 @@ Template.modal_popup.helpers
     if _popups.get().length > 0 then _setup.get() else false
   popup: ->
     _popups.get()
-
-  getSizeFromViewport: ->
-    viewport = getViewport()
-    [Math.ceil(viewport.width*0.90), Math.ceil(viewport.height*0.90)]
 
 Template._modal_popup.rendered = ->
   {id, lightbox} = @data
@@ -119,14 +133,14 @@ Template._modal_popup.rendered = ->
     fview.node.add child.surface.lightbox
     child.surface.lightbox.show child.surface
 
-Template.modal_backdrop.events
+Template.fvm_backdrop.events
   'click': (evt,tmpl) ->
     # from last inserted to first we hide and then remove modals
     setup = _setup.get()
     if setup.backdropCloseOnClick
       # No specific popup => remove 'em all
       popups = _popups.get()
-      {duration} = setup.lightbox.outTransition
+      {duration} = setup.lightbox?.outTransition
       for popup in popups
         do (popup) ->
           fview = FView.byId popup.id
@@ -135,7 +149,7 @@ Template.modal_backdrop.events
           duration = popup.lightbox?.outTransition.duration ? duration
           child?.surface.lightbox.hide()
 
-      # Wait for out animation to complete if nowait is false
+      # Wait for out animation to complete
       famous.utilities.Timer.setTimeout ->
         _popups.set []
       , duration

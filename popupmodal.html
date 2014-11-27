@@ -5,20 +5,18 @@
 <template name="modal_popup">
   {{#with backdrop}}
     {{#if modal}}
-      {{> Surface this}}
+      {{> Surface template="fvm_backdrop" opacity=opacity translate="[0,0,999]"}}
     {{/if}}
   {{/with}}
-  {{#Scrollview size=getSizeFromViewport origin="[.5,.5]" align="[.5,.5]"}}
+  {{#Scrollview size="[undefined,undefined]"}}
     {{#famousEach popup}}
-      {{#famousIf show}}
-        {{> _modal_popup this}}
-      {{/famousIf}}
+      {{> _modal_popup this}}
     {{/famousEach}}
   {{/Scrollview}}
 </template>
 
-<template name="modal_backdrop">
-  <div class="modal_backdrop">
-    <!-- Modal backdrop -->
+<template name="fvm_backdrop">
+  <div class="fvm-backdrop">
+    <!-- Modal Backdrop -->
   </div>
 </template>
