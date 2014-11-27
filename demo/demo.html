@@ -3,56 +3,264 @@
 </head>
 
 <body>
-  <h1>Welcome to Meteor!</h1>
-
-  {{> hello}}
+  {{> layout}}
 </body>
 
-<template name="hello">
-  <p>
-    Hello
-  </p>
-  <button id="modal">With modal</button>
-  <button id="nomodal">Without modal</button>
-  <button id="bootstrap">Bootstrap</button>
+<template name="layout">
+  {{#HeaderFooterLayout headerSize="50" footerSize="50"}}
+
+  {{#Surface target="header" translate="[0,0,100]"}}
+  {{> header}}
+  {{/Surface}}
+
+  {{#Scrollview size="[undefined,undefined]" target="content" transition="opacity"}}
+    {{>main}}
+  {{/Scrollview}}
+
+  {{#Surface target="footer" class="footer"}}
+  {{> footer}}
+  {{/Surface}}
+
+  {{/HeaderFooterLayout}}
 </template>
 
-<template name="modal">
-  {{> Surface template="_world"}}
+<template name="header">
+  <!-- Fixed navbar -->
+  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <div class="nav navbar-text">
+          <span class="bold">Famous Views Modal Popups</span>
+        </div>
+        <a class="navbar-brand" href="/">
+          <img src="/meteor_famous_view_logo.svg" height="75" width="90">
+        </a>
+      </div>
+      <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li><a id="simple" href="#">Simple popup</a></li>
+          <li><a id="modal-sm" href="#">Bootstrap popup (small)</a></li>
+          <li><a id="modal" href="#">Bootstrap popup (normal)</a></li>
+          <li><a id="modal-lg" href="#">Bootstrap popup (large)</a></li>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
 </template>
 
-<template name="nomodal">
+<template name="footer">
+  <!-- Fixed navbar -->
+  <div class="navbar navbar-inverse navbar-fixed-bottom" role="navigation">
+    <div class="container">
+      <ul class="nav navbar-nav">
+        <span class="navbar-text">
+          Made with &#x2661; at Paris using <a href="http://meteor.com">Meteor</a>, <a href="http://coffeescript.org">CoffeeScript</a> and <a href="http://famo.us">Famo.us</a>
+        </span>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+          <a href="https://github.com/oorabona/famous-views-popup"><i class="fa fa-lg fa-github"></i></a>
+        </li>
+        <li>
+          <a href="https://twitter.com/oorabona"><i class="fa fa-lg fa-twitter"></i></a>
+        </li>
+        <li>
+          <a href="https://www.linkedin.com/in/olivierorabona"><i class="fa fa-lg fa-linkedin"></i></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<template name="main">
+  {{#StateModifier proportions="[.8,1]" origin="[.5,0]" align="[.5,0]"}}
+    {{>Surface size="[undefined, true]" class="content" template="readme"}}
+  {{/StateModifier}}
+  {{#StateModifier proportions="[.8,1]" origin="[.5,0]" align="[.5,0]"}}
+    {{>Surface size="[undefined, true]" class="content" template="_main"}}
+  {{/StateModifier}}
+</template>
+
+<template name="notice">
+  {{>Surface template="_notice" size="[undefined,true]" align="[.5,0]" origin="[.5,0]"}}
+</template>
+
+<template name="_notice">
+  <div class="alert alert-warning">
+    Bear in mind that close on click is only available when backdrop is shown
+  </div>
+</template>
+
+<template name="_main">
+  <hr/>
+  <h2>You can play around with these options:</h2>
+  <label class="checkbox">
+    <input name="rt" type="checkbox" {{checkedIf rt}}> Random transitions
+  </label>
+  <label class="checkbox">
+    <input name="showbd" type="checkbox" {{checkedIf showbd}}> Show modal backdrop
+  </label>
+  <label class="checkbox">
+    <input name="cocbd" type="checkbox" {{checkedIf cocbd}}> Backdrop close on click
+  </label>
+  <br/>
+  <h3>Backdrop opacity</h3>
+  <input type="range" name="opacity" min="0" max="1" step="0.01" value="{{opacity}}"
+    style="width: 200px; display: inline-block; vertical-align: middle;">
+  <input type="text" name="opacity" size="2" value="{{opacity}}" style="color: #000;">
+  <hr/>
+  <h3>Transitions</h3>
+  <label class="label">
+    In transition curve:
+    <select id="inCurve">
+      {{#each curves}}
+      <option value="{{this}}">
+        {{this}}
+      </option>
+      {{/each}}
+    </select>
+  </label>
+  <label class="label">
+    <input name="inDuration" type="number" value="{{inDuration}}">ms In Transition duration
+  </label>
+  <br/>
+  <label class="label">
+    Out transition curve:
+    <select id="outCurve">
+      {{#each curves}}
+      <option value="{{this}}">
+        {{this}}
+      </option>
+      {{/each}}
+    </select>
+  </label>
+  <label class="label">
+    <input name="outDuration" type="number" value="{{outDuration}}">ms Out Transition duration
+  </label>
+  <hr />
+  <div style="vertical-align: middle; width: 60px; display: inline-block; text-align: right">In transform</div>
+  <label class="label">
+    <input name="inX" type="number" value="{{inX}}"> X
+  </label>
+  <label class="label">
+    <input name="inY" type="number" value="{{inY}}"> Y
+  </label>
+  <label class="label">
+    <input name="inZ" type="number" value="{{inZ}}"> Z
+  </label>
+  <hr/>
+  <div style="vertical-align: middle; width: 60px; display: inline-block; text-align: right">Out transform</div>
+  <label class="label">
+    <input name="outX" type="number" value="{{outX}}"> X
+  </label>
+  <label class="label">
+    <input name="outY" type="number" value="{{outY}}"> Y
+  </label>
+  <label class="label">
+    <input name="outZ" type="number" value="{{outZ}}"> Z
+  </label>
+  <hr/>
+  <br/>
+</template>
+
+<template name="simple">
   {{> Surface template="_world"}}
 </template>
 
 <template name="_world">
   <div class="popup">
-    <h1>World !</h1>
+    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+    <h1>Hello World !</h1>
   </div>
 </template>
 
-<template name="bootstrap">
-  {{> Surface template="_bootstrap"}}
+<template name="modal-sm">
+  {{> Surface template="_bootstrap" size="[undefined,true]"}}
+</template>
+
+<template name="modal">
+  {{> Surface template="_bootstrap" size="[undefined,true]"}}
+</template>
+
+<template name="modal-lg">
+  {{> Surface template="_bootstrap" size="[undefined,true]"}}
 </template>
 
 <template name="_bootstrap">
   <div class="modal fade">
-    <div class="modal-dialog">
+    <div class="modal-dialog {{modal_class}}">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-          <h4 class="modal-title">Modal title</h4>
+          <h4 class="modal-title">Default Modal title</h4>
         </div>
         <div class="modal-body">
-          <p>One fine body&hellip;</p>
+          <p>Current In Transition: {{currentInTransition}}</p>
+          <p>Current Out Transition: {{currentOutTransition}}</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+          <button id="close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button id="save" type="button" class="btn btn-primary">Save changes</button>
         </div>
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
+</template>
+
+<template name="saved">
+  {{> Surface template="_saved" size="[undefined,true]"}}
+</template>
+
+<template name="_saved">
+  <div class="modal fade in">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <h1>Saved&hellip;</h1>
+        </div>
+        <div class="modal-footer">
+          <button id="ok" type="button" class="btn btn-primary">Ok</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+</template>
+
+<template name="closed">
+  {{>Surface template="_closed" size="[undefined,true]"}}
+</template>
+
+<template name="_closed">
+  <div class="modal fade in">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <p>Clicked close&hellip;</p>
+        </div>
+        <div class="modal-footer">
+          <button id="ok" type="button" class="btn btn-primary">Ok</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+</template>
+
+<template name="yoda">
+  {{>Surface template="_yoda"}}
+</template>
+<template name="_yoda">
+  <div class="thumbnail">
+    <img src="/yoda.png" width="280" height="280" alt="Yoda">
+    <caption>
+      <span>Use the Source, Luke</span>
+    </caption>
+  </div>
 </template>
 
 <template name="famousInit">
