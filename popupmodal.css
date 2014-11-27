@@ -1,5 +1,17 @@
-.modal_backdrop {
+/* Modal backdrop */
+.fvm-backdrop {
   background-color: black;
   height: 100%;
   width: 100%;
+}
+
+/* For Bootstrap .modal s */
+div.famous-surface div.modal {
+  top: auto;
+  bottom: auto;
+  left: auto;
+  right: auto;
+  position: static;
+  display: block;
+  overflow: hidden;
 }
