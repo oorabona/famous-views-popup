@@ -1,18 +1,16 @@
 <template name="_modal_popup">
-  {{> View this}}
+  {{> Surface this}}
 </template>
 
 <template name="modal_popup">
   {{#with backdrop}}
     {{#if modal}}
-      {{> Surface template="fvm_backdrop" opacity=opacity translate="[0,0,999]"}}
+      {{> Surface modifier="StateModifier" id="backdrop" template="fvm_backdrop" opacity=opacity properties="z-index:999"}}
     {{/if}}
   {{/with}}
-  {{#Scrollview size="[undefined,undefined]"}}
-    {{#famousEach popup}}
-      {{> _modal_popup this}}
-    {{/famousEach}}
-  {{/Scrollview}}
+  {{#each popup}}
+    {{> _modal_popup this}}
+  {{/each}}
 </template>
 
 <template name="fvm_backdrop">

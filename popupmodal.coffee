@@ -13,7 +13,6 @@ getRandomInt = (min, max) ->
 
   # We define how our backdrop will behave
   setOptions: (opts = {}) ->
-    opts.opacity ?= 0.5
     # If true (default), handles automagically clicks to backdrop and bind to
     # a "close all" event.
     opts.backdropCloseOnClick ?= true
@@ -40,22 +39,24 @@ getRandomInt = (min, max) ->
         return unless fview
         child = fview.children[0]
         duration = popup.lightbox?.outTransition.duration ? duration
-        child?.surface.lightbox.hide()
+        fview.surface.lightbox.hide()
       else
         popup
 
-    # Wait for out animation to complete and call back if needed
-    famous.utilities.Timer.setTimeout ->
-      _popups.set shown
-      cb && cb()
-    , duration
+    # Trigger timeout only if needed.
+    # Wait for out animation to complete and call back
+    if shown.length isnt popups.length
+      famous.utilities.Timer.setTimeout ->
+        _popups.set shown
+        cb && cb fview
+      , duration
 
   show: (opts = {}, cb) ->
     if typeof opts == "function"
       [cb, opts] = [opts, {}]
-    id = @_add opts
-    cb && cb id
-    id
+
+    opts.cb = cb
+    @_add opts
 
   _add: (opts) ->
     unless opts.template
@@ -71,13 +72,12 @@ getRandomInt = (min, max) ->
     # a FamousView ID.
     opts.id ?= getRandomInt 1000, 2000
 
-    # If we have translate option and a Z index, add enough to be "in front"
+    # We need to set z-index property to make sure we will be in front
     p = _popups.get()
-    translate = opts.translate ? [0,0,0]
-    translate[2] += 1000 + p.length
-    opts.translate = translate
+    opts.properties ?= {}
+    opts.properties.zIndex = 1000 + p.length
 
-    # Center by default
+    # And center by default
     opts.origin ?= [.5,.5]
     opts.align ?= [.5,.5]
 
@@ -116,7 +116,7 @@ Template.modal_popup.helpers
     _popups.get()
 
 Template._modal_popup.rendered = ->
-  {id, lightbox} = @data
+  {id, lightbox, cb} = @data
 
   # Has to be done after child has rendered
   Meteor.defer ->
@@ -128,10 +128,17 @@ Template._modal_popup.rendered = ->
     setup = _setup.get()
     _.defaults lightbox, setup.lightbox
 
+    # Set backdrop opacity if backdrop is enabled.
+    FView.byId("backdrop")?.modifier.setOpacity setup.opacity
+
     # http://stackoverflow.com/questions/24806437/built-in-popup-modal
-    child.surface.lightbox = new famous.views.Lightbox lightbox
-    fview.node.add child.surface.lightbox
-    child.surface.lightbox.show child.surface
+    fview.surface.lightbox = new famous.views.Lightbox lightbox
+    fview.node.add fview.surface.lightbox
+    fview.surface.lightbox.show fview.surface
+
+    # Callback now triggers once lightbox is started. This allows bootstrap
+    # modal init for example without the need to hook template 'rendered' function.
+    cb && cb fview
 
 Template.fvm_backdrop.events
   'click': (evt,tmpl) ->
@@ -147,7 +154,7 @@ Template.fvm_backdrop.events
           return unless fview
           child = fview.children[0]
           duration = popup.lightbox?.outTransition.duration ? duration
-          child?.surface.lightbox.hide()
+          fview.surface.lightbox.hide()
 
       # Wait for out animation to complete
       famous.utilities.Timer.setTimeout ->
