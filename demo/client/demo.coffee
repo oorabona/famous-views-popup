@@ -63,15 +63,13 @@ Template.header.events
       template: evt.currentTarget.id
       size: evt.currentTarget.id
       modal_class: evt.currentTarget.id
+    , (fview) ->
+      $('.modal').addClass('in').css
+        display: 'block'
+        overflow: 'hidden'
+      return
 
     return
-
-Template._bootstrap.rendered = ->
-  # Modal manual opening
-  @$('.modal').addClass('in').css
-    display: 'block'
-    overflow: 'hidden'
-  return
 
 Template._bootstrap.helpers
   currentInTransition: -> Session.get('currentTransitions')[0]
@@ -103,12 +101,12 @@ Template.saved.rendered = ->
     overflow: 'hidden'
   return
 
-Template._saved.events
+Template.saved.events
   'click #ok': (evt, tmpl) ->
     Popups.hide id: @id
     return
 
-Template._closed.events
+Template.closed.events
   'click #ok': (evt, tmpl) ->
     Popups.hide id: @id
     return
@@ -218,6 +216,7 @@ Tracker.autorun ->
       size: "[600, true]"
 
 # A bit of Yoda's Magic !
+###
 Meteor.setTimeout ->
   # Adapted from http://jsfiddle.net/ritcoder/beh9z/1/
   id = Popups.show
@@ -245,3 +244,4 @@ Meteor.setTimeout ->
   , getRandomInt 1000, 5000
   return
 , getRandomInt 10000, 20000
+###
