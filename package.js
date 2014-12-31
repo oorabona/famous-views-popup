@@ -15,6 +15,7 @@ Package.onUse(function(api) {
   api.use('reactive-var', 'client');
   api.use('templating', 'client');
   api.use('random', 'client');
+  api.use('deps', 'client');
 
   api.use('mjn:famous@0.3.0_5', 'client', { weak: true });
   api.use('raix:famono@0.9.14', { weak: true });

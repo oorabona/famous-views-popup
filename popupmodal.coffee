@@ -160,3 +160,20 @@ Template.fvm_backdrop.events
       famous.utilities.Timer.setTimeout ->
         _popups.set []
       , duration
+
+# This will be run every time popups changes but only removes child elements
+# if we are out of any popup.
+Tracker.autorun ->
+  popups = _popups.get()
+  fview = FView.byId 'modal'
+  return unless fview
+
+  # Clean up children only if no more active popup
+  if popups.length is 0
+    # Clean up destroyed children
+    fview.children.forEach (child) ->
+      child.destroy true
+
+    fview.children = []
+
+  return
