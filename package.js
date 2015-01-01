@@ -1,7 +1,7 @@
 Package.describe({
   name: 'oorabona:famous-views-popup',
   summary: 'Use Famo.us for your popups!',
-  version: '1.1.0',
+  version: '2.0.0',
   git: 'https://github.com/oorabona/famous-views-popup.git'
 });
 
