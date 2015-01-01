@@ -7,11 +7,5 @@
 
 /* For Bootstrap .modal s */
 div.famous-surface div.modal {
-  top: auto;
-  bottom: auto;
-  left: auto;
-  right: auto;
-  position: static;
-  display: block;
-  overflow: hidden;
+  position: static !important;
 }
