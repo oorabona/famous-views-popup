@@ -1,9 +1,6 @@
 _popups = new ReactiveVar []
 _setup = new ReactiveVar
 
-getRandomInt = (min, max) ->
-  Math.floor(Math.random() * (max - min)) + min
-
 @Popups =
   # Default size with the same name as Bootstrap. But not the same meaning!
   sizes:
@@ -22,32 +19,34 @@ getRandomInt = (min, max) ->
     _setup.set opts
 
   # Hide a modal (i.e. remove it from the list)
-  hide: (query, cb) ->
-    if typeof query == "function"
-      [cb, query] = [query, {}]
+  hide: (id, cb) ->
+    if typeof id is "function"
+      throw new Error "Must specify a popup id!"
 
     popups = _popups.get()
     setup = _setup.get()
-    {duration} = setup.lightbox.outTransition
-    shown = _.compact popups.map (popup) ->
-      shouldRemove = true
-      for k,v of query
-        if popup[k] != v then shouldRemove = false
 
-      if shouldRemove
-        fview = FView.byId popup.id
-        return unless fview
-        child = fview.children[0]
-        duration = popup.lightbox?.outTransition.duration ? duration
-        fview.surface.lightbox.hide()
-      else
-        popup
+    # We are looking for one (or more) popups to remove
+    duration = null
+    shown = popups.filter (popup) ->
+      if popup.id is id
+        duration = popup.lightbox?.outTransition.duration
+      popup.id isnt id
+
+    duration ?= setup.lightbox.outTransition.duration
+
+    fview = FView.byId id
+    return unless fview
+    child = fview.children[0]
+    fview.surface.lightbox.hide()
 
     # Trigger timeout only if needed.
     # Wait for out animation to complete and call back
     if shown.length isnt popups.length
       famous.utilities.Timer.setTimeout ->
         _popups.set shown
+        # remove ourselves
+        fview.destroy true
         cb && cb fview
       , duration
 
@@ -67,10 +66,8 @@ getRandomInt = (min, max) ->
     unless _setup.get()
       @setOptions()
 
-    # FIXME: It apparently confuses with #View ID and modifies its reference
-    # Temp fix is to generate a random integer and expect it to not be already
-    # a FamousView ID.
-    opts.id ?= getRandomInt 1000, 2000
+    # We need to somehow identify which ones are ours..
+    opts.id = "popup_#{Random.id()}"
 
     # We need to set z-index property to make sure we will be in front
     p = _popups.get()
