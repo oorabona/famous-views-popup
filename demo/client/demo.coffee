@@ -102,6 +102,13 @@ Template.saved.rendered = ->
     overflow: 'hidden'
   return
 
+Template.closed.rendered = ->
+  # Modal manual opening
+  @$('.modal').addClass('in').css
+    display: 'block'
+    overflow: 'hidden'
+  return
+
 Template.saved.events
   'click #ok': (evt, tmpl) ->
     Popups.hide @id
