@@ -9,7 +9,7 @@ You can add it to your Meteor project with a simple:
 meteor add oorabona:famous-views-popup
 ```
 
-You can experiment with the top nav items. If you find an issue, feel free to
+You can experiment with the top nav items. Feel free to
 fill an issue on [Github](https://github.com/oorabona/famous-views-popup/issues) !
 
 # How does it work ?
@@ -20,6 +20,7 @@ to provide a [Famo.us Lightbox](https://famo.us/docs/views/Lightbox) to show the
 ## Lightbox
 
 Default lightbox was taken from this answer on [SO](http://stackoverflow.com/questions/24806437/built-in-popup-modal)
+
 ```javascript
 {
   inTransform: famous.core.Transform.translate(0,-500,0),
@@ -37,31 +38,36 @@ Default lightbox was taken from this answer on [SO](http://stackoverflow.com/que
 
 ## Templates
 
-Your templates should be defined like this:
+Starting with v2.0.0, it is defaulted to use a simple ```#Surface``` so your templates can now be defined like this:
 
 ```
 <template name="popup">
-  { {> Surface template="_popup"}}
-</template>
-
-<template name="_popup">
   <div class="my_popup">
     <h1>Popup!</h1>
   </div>
 </template>
 ```
 
-Indeed, you need to specify which Famo.us surface you want to use. In general you will use a '{ {> Surface ...}}' but it may be another registered FView helper.
+No more specifying additional Famo.us surface or anything else.
+
+~~~Indeed, you need to specify which Famo.us surface you want to use. In general you will use a '{ {> Surface ...}}' but it may be another registered FView helper.~~~
 
 Also better to handle events in Plain Old HTML on another template and split HTML and Famo.us Surface events explicitly.
 
 Last but certainly not the least, you **MUST** call 'modal_popup' template somewhere at the very beginning, like:
 
+With the now recommended use of ```#famousContext``` instead of the old ```famousInit``` template, you need to write something like this.
+
 ```
-<template name="famousInit">
-  { {> modal_popup}}
-</template>
+<body>
+  { {#famousContext id="modal"}}
+    { {> modal_popup}}
+  { {/famousContext}}
+</body>
 ```
+
+> #Important:
+It is mandatory that the famousContext have an id set to "modal" !
 
 Voilà! You are all set!
 
@@ -74,6 +80,7 @@ Now, you can call Popups at any time using this API.
 ## setOptions
 
 Sets common options. Backdrop opacity and how Popups should take care of click on backdrop. If true, clicking on backdrop will force close __all__ opened popups.
+
 ```javascript
 Popups.setOptions({
   opacity: 0.5
@@ -99,7 +106,7 @@ __callback__ is called __AFTER__ animation completed.
 >Options:
 
 >* *template*: the template name to render
->* *id*: if you want to override it (USE WITH CAUTION!)
+>* *id*: automatically set for you, but you can force it to have this value (USE WITH CAUTION!)
 >* *translate*: if you want to use this feature. Note, Z axis is automatically adjusted with a +1000 so that it is always in front.
 >* *lightbox*: overrides lightbox options you could have set up with setOptions(...).
 >* *size*: Famo.us object size
@@ -140,25 +147,22 @@ Hide a template, based on a query. E.g:
 
 ```javascript
 // Function signature
-my_popup.hide(query, callback);
-// If no query (i.e. remove all popups)
-my_popup.hide(callback);
-// Or if you do not need a callback
-my_popup.hide();
+my_popup.hide(id, callback);
+// Or without callback
+my_popup.hide(id);
 ```
 
->*query* works like a database query, you can filter with any key:value pair.
->*callback* is called once the animation is over, from a setTimeout function.
+>*id* is the popup id you want to hide. This value is usually part of the Popup data template.
 
-Where first parameter is a query. Most often 'id' will be used. But actually
-you could filter according to size as well!
+>*callback* is called once the animation is over, from a setTimeout function.
 
 Example:
 
 ```javascript
 Template.foo.events({
   'click #close': function(evt, tmpl) {
-    Popups.hide({id: this.id}, function() {
+    // You have access to current fview if you need it.
+    Popups.hide(this.id, function(fview) {
       Session.set("my-popup-data", null);
     });
   }
