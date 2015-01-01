@@ -60,22 +60,23 @@ Template.header.events
 
     # Show popup
     Popups.show
-      template: evt.currentTarget.id
+      template: "bootstrap"
       size: evt.currentTarget.id
       modal_class: evt.currentTarget.id
-    , (fview) ->
-      $('.modal').addClass('in').css
-        display: 'block'
-        overflow: 'hidden'
-      return
 
     return
 
-Template._bootstrap.helpers
+Template.bootstrap.helpers
   currentInTransition: -> Session.get('currentTransitions')[0]
   currentOutTransition: -> Session.get('currentTransitions')[1]
 
-Template._bootstrap.events
+Template.bootstrap.rendered = ->
+  @$('.modal').addClass('in').css
+    display: 'block'
+    overflow: 'hidden'
+  return
+
+Template.bootstrap.events
   'click #save': (evt, tmpl) ->
     Popups.show
       template: "saved"
@@ -103,12 +104,12 @@ Template.saved.rendered = ->
 
 Template.saved.events
   'click #ok': (evt, tmpl) ->
-    Popups.hide id: @id
+    Popups.hide @id
     return
 
 Template.closed.events
   'click #ok': (evt, tmpl) ->
-    Popups.hide id: @id
+    Popups.hide @id
     return
 
 Template._main.helpers
