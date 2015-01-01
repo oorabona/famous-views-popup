@@ -45,8 +45,6 @@ _setup = new ReactiveVar
     if shown.length isnt popups.length
       famous.utilities.Timer.setTimeout ->
         _popups.set shown
-        # remove ourselves
-        fview.destroy true
         cb && cb fview
       , duration
 
